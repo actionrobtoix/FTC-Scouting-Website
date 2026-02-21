@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Action Scout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-nav">
+        <div class="brand">
+          <div class="brand-mark">FTC</div>
+          <div>
+            <h1>Action Scout</h1>
+            <p>Alliance Selection Intelligence</p>
+          </div>
+        </div>
+
+        <nav class="nav-list" id="nav-list">
+          <button class="nav-btn active" data-view="overview">Overview</button>
+          <button class="nav-btn" data-view="rankings">Rankings</button>
+          <button class="nav-btn" data-view="teams">Team Search</button>
+          <button class="nav-btn" data-view="watchlist">Watchlist</button>
+          <button class="nav-btn" data-view="myteam">My Team Data</button>
+        </nav>
+
+        <section class="source-card">
+          <h3>Data Source</h3>
+          <p>Live FTCScout team list + DECODE records (MO/KS teams only). Official FTC API fallback is used automatically from server credentials.</p>
+          <label>
+            Season (DECODE)
+            <input id="season-input" type="number" min="2025" max="2025" step="1" />
+          </label>
+          <button id="load-live" class="ghost">Load FTCScout Live Data</button>
+          <input id="json-upload" type="file" accept="application/json" />
+          <span id="data-status">No teams loaded yet</span>
+        </section>
+
+        <section class="credit-card">
+          <h3>Made By</h3>
+          <p>Action Robotics #25779</p>
+          <h3>Sponsors</h3>
+          <div class="sponsor-list">
+            <span>Cardinals Care</span>
+            <span>Gene Haas</span>
+            <span>Polymaker</span>
+          </div>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h2>Action Scout: FIRST Tech Challenge Analytics</h2>
+            <p>Search every team profile, compare performance, and build your alliance watchlist faster.</p>
+          </div>
+          <div class="top-actions">
+            <input id="global-search" type="search" placeholder="Search by team number or name" />
+            <button id="clear-filters">Clear Filters</button>
+          </div>
+        </header>
+
+        <section id="view-overview" class="view active">
+          <div class="stat-grid" id="stat-grid"></div>
+          <div class="panel split">
+            <div>
+              <div class="panel-head">
+                <h3>Capability Heatmap</h3>
+              </div>
+              <div id="capability-bars" class="capability-bars"></div>
+            </div>
+            <div>
+              <div class="panel-head">
+                <h3>Top Alliance Targets</h3>
+              </div>
+              <div id="top-targets" class="list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-rankings" class="view">
+          <div class="panel">
+            <div class="panel-head wide">
+              <h3>Rankings Leaderboard</h3>
+              <div class="inline-controls">
+                <label>
+                  Sort By
+                  <select id="ranking-sort"></select>
+                </label>
+                <label>
+                  League
+                  <select id="ranking-league"></select>
+                </label>
+                <label>
+                  Country
+                  <select id="ranking-country"></select>
+                </label>
+              </div>
+            </div>
+            <div id="ranking-table" class="table"></div>
+          </div>
+        </section>
+
+        <section id="view-teams" class="view">
+          <div class="panel filters">
+            <div class="panel-head wide">
+              <h3>Advanced Team Filters</h3>
+              <span>Build custom scouting queries instantly</span>
+            </div>
+            <div class="filter-grid">
+              <label>
+                League
+                <select id="filter-league"></select>
+              </label>
+              <label>
+                Country
+                <select id="filter-country"></select>
+              </label>
+              <label>
+                Minimum EPA
+                <input id="filter-epa" type="number" min="0" step="1" placeholder="0" />
+              </label>
+              <label>
+                Minimum Win %
+                <input id="filter-winrate" type="number" min="0" max="100" step="1" placeholder="0" />
+              </label>
+              <label>
+                Endgame Capability
+                <select id="filter-endgame">
+                  <option value="all">Any</option>
+                  <option value="singlePark">Single Park</option>
+                </select>
+              </label>
+              <label class="checkbox">
+                <input id="filter-auto-specialist" type="checkbox" />
+                Auto specialist only
+              </label>
+              <label class="checkbox">
+                <input id="filter-low-penalty" type="checkbox" />
+                Low penalty teams
+              </label>
+            </div>
+          </div>
+
+          <div class="team-layout">
+            <div class="panel">
+              <div class="panel-head wide">
+                <h3>Team Results</h3>
+                <span id="team-count"></span>
+              </div>
+              <div id="team-list" class="list"></div>
+            </div>
+            <div class="panel detail" id="team-detail">
+              <div class="empty">Select a team to view complete analytics.</div>
+            </div>
+          </div>
+
+        </section>
+
+        <section id="view-watchlist" class="view">
+          <div class="panel">
+            <div class="panel-head wide">
+              <h3>Scout Watchlist</h3>
+              <span>Saved locally for quick alliance review</span>
+            </div>
+            <div class="compare-controls">
+              <label>
+                Team A
+                <select id="compare-a"></select>
+              </label>
+              <label>
+                Team B
+                <select id="compare-b"></select>
+              </label>
+              <button id="run-compare" class="ghost">Compare</button>
+            </div>
+            <div id="compare-result" class="compare-result"></div>
+            <div id="watchlist-list" class="list"></div>
+          </div>
+        </section>
+
+        <section id="view-myteam" class="view">
+          <div class="panel custom-team-panel">
+            <div class="panel-head wide">
+              <h3>My Team Compatibility Report</h3>
+              <span>Enter your team stats and compare with any watchlist team</span>
+            </div>
+            <p class="team-meta">
+              Compatibility compares your team vs the target team by Total NP, Auto, Teleop, Endgame, consistency, and penalties.
+              Higher percent means more balanced scoring fit and cleaner match performance together.
+            </p>
+            <div class="filter-grid">
+              <label>
+                Your Team Name
+                <input id="myteam-name" type="text" placeholder="Action Robotix" />
+              </label>
+              <label>
+                Compare Against (Watchlist)
+                <select id="myteam-target"></select>
+              </label>
+              <label>
+                Your Auto Avg
+                <input id="myteam-auto" type="number" min="0" step="0.1" placeholder="18.5" />
+              </label>
+              <label>
+                Your Teleop Avg
+                <input id="myteam-teleop" type="number" min="0" step="0.1" placeholder="42.0" />
+              </label>
+              <label>
+                Your Endgame Avg
+                <input id="myteam-endgame" type="number" min="0" step="0.1" placeholder="20.0" />
+              </label>
+              <label>
+                Your Consistency (0-100)
+                <input id="myteam-consistency" type="number" min="0" max="100" step="1" placeholder="82" />
+              </label>
+              <label>
+                Penalties / Match
+                <input id="myteam-penalties" type="number" min="0" step="0.01" placeholder="0.5" />
+              </label>
+            </div>
+            <div class="row-actions">
+              <button id="myteam-report" class="primary">Generate Compatibility</button>
+            </div>
+            <div id="myteam-output" class="empty">Enter your team stats and select a watchlist team.</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
